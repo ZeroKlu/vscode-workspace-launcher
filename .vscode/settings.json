@@ -1,6 +1,9 @@
 {
     "cSpell.words": [
         "getlogin",
+        "onefile",
+        "pyinstaller",
+        "pysimplegui",
         "scandir"
     ]
 }
