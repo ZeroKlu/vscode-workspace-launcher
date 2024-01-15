@@ -1,58 +1,117 @@
 import PySimpleGUI as sg
-from os import path, scandir
+from os import path, scandir, getlogin
 from pathlib import Path
 import json
 import urllib.parse as up
 import subprocess
+from dataclasses import dataclass
+from sm_utils import file_path
 
-def create_window() -> None:
-    """Create a new window in PySimpleGUIQt"""
-    code_exe = path.join(path.expanduser("~"), "AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe")
-    filter = sg.InputText(enable_events=True, key="-FILTER-")
-    workspaces = get_workspaces()
-    workspace_selector = sg.Combo(list(workspaces.keys()), enable_events=True, key="-DROPDOWN-")
-    window_layout = [[sg.Text("Filter:"), filter],[workspace_selector]]
+@dataclass
+class Workspace(object):
+    """Defines a workspace"""
+    name: str
+    parent: str
+    workspace: str
+    @property
+    def display_name(self) -> str:
+        return f"{self.parent} > {self.name}"
 
-    window = sg.Window(
-        title="VSCode Workspace Launcher",
-        icon="vscode.ico",
-        layout=window_layout,
-        margins=(10, 10)
-    )
-    filter_text = ""
-    while True:
-        event, values = window.read()
-        if event == sg.WIN_CLOSED:
-            break
-        if event == "-FILTER-" and values["-FILTER-"] != filter_text:
-            filter_text =  values["-FILTER-"]
-            workspaces = get_workspaces(filter_text)
-            window["-DROPDOWN-"].update(values=list(workspaces.keys()))
-        if event == "-DROPDOWN-":
-            args = [code_exe, workspaces[values["-DROPDOWN-"]]]
-            subprocess.run(args)
+class WorkspaceLocater(object):
+    """VSCode Workspace Launcher"""
+    def __init__(self, settings: dict[str, str]) -> None:
+        """Initialize"""
+        self.settings = settings
 
-    window.close()
+    def get_workspaces(self, filter: str|None="") -> list[Workspace]:
+        """Get all workspaces used by VSCode"""
+        workspaces = []
+        folders = [f.path for f in scandir(self.settings["workspace_path"]) if f.is_dir()]
+        for folder in folders:
+            file = Path(path.join(folder, "workspace.json"))
+            if not file.is_file():
+                continue
+            data = json.loads(file.read_text())
+            if "folder" not in data:
+                continue
+            workspace = up.unquote(data["folder"][8:]).replace("/", "\\")
+            if not path.isdir(workspace):
+                continue
+            parts = workspace.split("\\")
+            if len(filter) > 0 and filter.lower() not in "".join([p for p in parts[-2:]]):
+                continue
+            workspaces.append(Workspace(
+                workspace=workspace,
+                parent=parts[-2],
+                name=parts[-1]
+            ))
+        return sorted(workspaces, key=lambda x: x.display_name)
 
-def get_workspaces(filter: str|None="") -> dict[str, str]:
-    """Get the list of workspaces from the local PC"""
-    ws_dir = path.join(path.expanduser("~"), "AppData\\Roaming\\Code\\User\\workspaceStorage")
-    workspaces = {}
-    folders = [f.path for f in scandir(ws_dir) if f.is_dir()]
-    for folder in folders:
-        file = Path(path.join(folder, "workspace.json"))
-        if not file.is_file(): continue
-        data = json.loads(file.read_text())
-        if "folder" not in data: continue
-        workspace = up.unquote(data["folder"][8:]).replace("/", "\\")
-        if workspace[1] != ":" or not path.isdir(workspace): continue
-        if len(filter) > 0 and filter.lower() not in workspace.lower(): continue
-        parts = workspace.split("\\")
-        workspaces[f"{parts[-2]} > {parts[-1]}"] = workspace
-    return dict(sorted(workspaces.items()))
+class WorkspaceLauncher(object):
+    """UI for Workspace Launcher"""
+    def __init__(self) -> None:
+        """Initialize"""
+        self.settings = self.get_settings()
+        self.workspace_locater = WorkspaceLocater(self.settings)
+    
+    def get_settings(self):
+        """Get the user settings from JSON file"""
+        o_user = path.expanduser("~")
+        settings = {
+            "exe_path": path.join(o_user, "AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"),
+            "workspace_path": path.join(o_user, "AppData\\Roaming\\Code\\User\\workspaceStorage"),
+            "username": getlogin()
+        }
+        if path.isfile("settings.json"):
+            file = Path(file_path("settings.json"))
+            user_settings = json.loads(file.read_text())
+            if user_settings["exe_path"].lower() != "default":
+                settings["exe_path"] = user_settings["exe_path"]
+            if user_settings["workspace_path"].lower() != "default":
+                settings["workspace_path"] = user_settings["workspace_path"]
+            if user_settings["username"].lower() != "default":
+                u_user = f"C:\\Users\\{settings['username']}"
+                settings["username"] = user_settings["username"]
+                settings["exe_path"] = settings["exe_path"].replace(o_user, u_user)
+                settings["workspace_path"] = settings["workspace_path"].replace(o_user, u_user)
+        return settings
+
+    def create_ui(self) -> None:
+        """Launch the UI window and run"""
+        text = ("Consolas", 10)
+        filter = sg.InputText(enable_events=True, key="-FILTER-", font=text)
+        workspaces = self.workspace_locater.get_workspaces()
+        workspace_selector = sg.Combo(
+            [w.display_name for w in workspaces],
+            enable_events=True,
+            key="-DROPDOWN-",
+            font=text
+        )
+        window_layout = [[sg.Text("Filter:", font=text), filter],[workspace_selector]]
+        window = sg.Window(
+            title="VSCode Workspace Launcher",
+            icon="vscode.ico",
+            layout=window_layout,
+            margins=(0, 0)
+        )
+        filter_text = ""
+        while True:
+            event, values = window.read()
+            if event == sg.WIN_CLOSED:
+                break
+            if event == "-FILTER-" and values["-FILTER-"] != filter_text:
+                filter_text =  values["-FILTER-"]
+                workspaces = self.workspace_locater.get_workspaces(filter_text)
+                window["-DROPDOWN-"].update(values=[w.display_name for w in workspaces])
+            if event == "-DROPDOWN-":
+                workspace = next(x.workspace for x in workspaces if x.display_name == values["-DROPDOWN-"])
+                args = [self.settings["exe_path"], workspace]
+                subprocess.run(args)
+        window.close()
 
 def main() -> None:
-    create_window()
+    launcher = WorkspaceLauncher()
+    launcher.create_ui()
 
 if __name__ == "__main__":
     main()
