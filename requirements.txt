@@ -4,6 +4,5 @@ pefile==2023.2.7
 pyinstaller==6.3.0
 pyinstaller-hooks-contrib==2023.12
 PySimpleGUI==4.60.5
-PySimpleGUIQt==0.30.0
 pywin32-ctypes==0.2.2
 sm_utils==0.2.7
