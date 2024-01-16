@@ -5,6 +5,13 @@ vscode-workspace-launcher
 ### What is this repository for? ###
 
 * A utility to list and launch VSCode workspaces.
+* Currently only supports Windows (tested on Windows 10 and 11)
+
+### Roadmap ###
+
+* Add Linux support
+* Clean up appearance
+* Allow sort by latest used date instead of parent folder > workspace name
 
 ### Setup/Requirements ###
 
@@ -37,16 +44,16 @@ vscode-workspace-launcher
 * To change the position where the window appears when launched, modify the ```x_position``` and/or ```y_position``` values in settings.json
     * x_position: (```"x_position": n```) where n is an integer:
         * n > 0: places the top, left corner n pixels from the left of the screen.
-        * n < 0: places the top, left corner n pixels from the right of the screen.
+        * n < 0: places the top, left corner |n| pixels from the right of the screen.
         * n = 0: will be treated as a 10-pixel offset from the left
     * x_position: (```"y_position": n```) where n is an integer:
         * n > 0: places the top, left corner n pixels from the top of the screen.
-        * n < 0: places the top, left corner n pixels from the bottom of the screen.
+        * n < 0: places the top, left corner |n| pixels from the bottom of the screen.
         * n = 0: will be treated as a 10-pixel offset from the top
 
 ### Known Conflicts/Compatibility Notes ###
 
-* N/A
+* Paths only support Windows
 
 ### Documentation ###
 
