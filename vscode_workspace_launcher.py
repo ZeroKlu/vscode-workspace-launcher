@@ -96,7 +96,7 @@ class WorkspaceLauncher(object):
         window_layout = [[sg.Text("Filter:", font=text), filter],[workspace_selector]]
         window = sg.Window(
             title="Workspace Launcher for Visual Studio Code",
-            icon="vscode.ico",
+            icon="rocket.ico",
             layout=window_layout,
             margins=(0, 0)
         )
