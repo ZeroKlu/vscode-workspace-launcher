@@ -1,9 +1,10 @@
 import PySimpleGUI as sg
+import sys
+import subprocess
 from os import path, scandir, getlogin
 from pathlib import Path
 import json
 import urllib.parse as up
-import subprocess
 from dataclasses import dataclass
 from sm_utils import file_path
 
@@ -96,7 +97,7 @@ class WorkspaceLauncher(object):
         window_layout = [[sg.Text("Filter:", font=text), filter],[workspace_selector]]
         window = sg.Window(
             title="Workspace Launcher for Visual Studio Code",
-            icon="rocket.ico",
+            icon=self.resource_path("rocket.ico"),
             layout=window_layout,
             margins=(0, 0)
         )
@@ -115,10 +116,15 @@ class WorkspaceLauncher(object):
                 workspaces = self.workspace_locater.get_workspaces(filter_text)
                 window["-DROPDOWN-"].update(values=[w.display_name for w in workspaces])
             if event == "-DROPDOWN-":
-                print(window.CurrentLocation())
                 workspace = next(x.workspace for x in workspaces if x.display_name == values["-DROPDOWN-"])
                 args = [self.settings["exe_path"], workspace]
+                subprocess.call(args)
         window.close()
+
+    def resource_path(self, file_name: str) -> str:
+        """Fix for issue with PyInstaller not respecting the icon"""
+        base_path = getattr(sys, "_MEIPASS", path.dirname(path.abspath(__file__)))
+        return path.join(base_path, file_name)
 
 def main() -> None:
     launcher = WorkspaceLauncher()

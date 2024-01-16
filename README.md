@@ -19,7 +19,7 @@ vscode-workspace-launcher
 ### Usage ###
 
 * To generate a stand-alone executable, run the following command:
-    * ```pyinstaller --onefile vscode_workspace_launcher.py --windowed --icon=rocket.ico --version-file=version.txt```<br><br>
+    * ```pyinstaller --onefile vscode_workspace_launcher.py --windowed --add-data "rocket.ico:." --icon=rocket.ico --version-file=version.txt```<br><br>
 * To update the properties (version number, etc.) of the executable, do the following before generating the .exe:
     * Edit "version.yaml" with the values you want for the properties, then run the following command:
     * ```create-version-file version.yaml --outfile version.txt```<br><br>
