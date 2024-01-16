@@ -60,7 +60,9 @@ class WorkspaceLauncher(object):
         settings = {
             "exe_path": path.join(o_user, "AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe"),
             "workspace_path": path.join(o_user, "AppData\\Roaming\\Code\\User\\workspaceStorage"),
-            "username": getlogin()
+            "username": getlogin(),
+            "x_location": 10,
+            "y_location": 10
         }
         if path.isfile("settings.json"):
             file = Path(file_path("settings.json"))
@@ -74,6 +76,10 @@ class WorkspaceLauncher(object):
                 settings["username"] = user_settings["username"]
                 settings["exe_path"] = settings["exe_path"].replace(o_user, u_user)
                 settings["workspace_path"] = settings["workspace_path"].replace(o_user, u_user)
+            if user_settings["x_location"] != 0:
+                settings["x_location"] = user_settings["x_location"]
+            if user_settings["y_location"] != 0:
+                settings["y_location"] = user_settings["y_location"]
         return settings
 
     def create_ui(self) -> None:
@@ -89,11 +95,16 @@ class WorkspaceLauncher(object):
         )
         window_layout = [[sg.Text("Filter:", font=text), filter],[workspace_selector]]
         window = sg.Window(
-            title="VSCode Workspace Launcher",
+            title="Workspace Launcher for Visual Studio Code",
             icon="vscode.ico",
             layout=window_layout,
             margins=(0, 0)
         )
+        x_size, y_size = window.get_screen_dimensions()
+        x, y = self.settings["x_location"], self.settings["y_location"]
+        x_pos = x if x > 0 else x_size + x
+        y_pos = y if y > 0 else y_size + y
+        window.Location = (x_pos, y_pos)
         filter_text = ""
         while True:
             event, values = window.read()
@@ -104,9 +115,9 @@ class WorkspaceLauncher(object):
                 workspaces = self.workspace_locater.get_workspaces(filter_text)
                 window["-DROPDOWN-"].update(values=[w.display_name for w in workspaces])
             if event == "-DROPDOWN-":
+                print(window.CurrentLocation())
                 workspace = next(x.workspace for x in workspaces if x.display_name == values["-DROPDOWN-"])
                 args = [self.settings["exe_path"], workspace]
-                subprocess.run(args)
         window.close()
 
 def main() -> None:

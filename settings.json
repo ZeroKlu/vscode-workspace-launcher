@@ -1,5 +1,7 @@
 {
     "exe_path": "default",
     "workspace_path": "default",
-    "username": "default"
+    "username": "default",
+    "x_location": 10,
+    "y_location": -160
 }
