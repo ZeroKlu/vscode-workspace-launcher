@@ -1,6 +1,6 @@
 # README #
 
-vscode-workspace-launcher
+Workspace Launcher for Visual Studio Code
 
 ### What is this repository for? ###
 

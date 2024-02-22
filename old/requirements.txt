@@ -1,0 +1,13 @@
+altgraph==0.17.4
+Jinja2==3.1.3
+MarkupSafe==2.1.3
+packaging==23.2
+pefile==2023.2.7
+pyinstaller==6.3.0
+pyinstaller-hooks-contrib==2023.12
+pyinstaller-versionfile==2.1.1
+PySimpleGUI==4.60.5
+PySimpleGUIQt==0.30.0
+pywin32-ctypes==0.2.2
+PyYAML==6.0.1
+sm_utils==0.2.7
