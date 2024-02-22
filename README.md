@@ -18,6 +18,9 @@ Workspace Launcher for Visual Studio Code
 * Install the following Python modules:
     * PySimpleGUI
         * ```py -m pip install pysimplegui```
+    * sm-utils
+        * ```py -m pip install sm_utils```
+* If you want to compile this to an executable, install the following additional Python modules:
     * PyInstaller
         * ```py -m pip install pyinstaller```
     * PyInstaller VersionFile
@@ -34,26 +37,50 @@ Workspace Launcher for Visual Studio Code
 * To run with VSCode paths other than the defaults, edit the settings.json file:
     * exe_path:
         * This is the path to the Visual Studio Code executable
-        * Default: ```C:\\Users\\{USERNAME}\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe```
+        * Default (Windows):<br>
+        ```C:\\Users\\{USERNAME}\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe```
     * workspace_path:
         * This is the path to the folder containingVisual Studio Code workspaces
-        * Default: ```C:\\Users\\{USERNAME}\\AppData\\Roaming\\Code\\User\\workspaceStorage```
+        * Default (Windows):<br>
+        ```C:\\Users\\{USERNAME}\\AppData\\Roaming\\Code\\User\\workspaceStorage```
     * username:
         * The user whose workspaces should be displayed
         * Default: Current Windows User<br><br>
-* To change the position where the window appears when launched, modify the ```x_position``` and/or ```y_position``` values in settings.json
-    * x_position: (```"x_position": n```) where n is an integer:
+
+* To change the position where the window appears when launched, modify the ```x_location``` and/or ```y_location``` values in settings.json
+    * x_location: (```"x_location": n```) where n is an integer:
         * n > 0: places the top, left corner n pixels from the left of the screen.
         * n < 0: places the top, left corner |n| pixels from the right of the screen.
         * n = 0: will be treated as a 10-pixel offset from the left
-    * x_position: (```"y_position": n```) where n is an integer:
+    * y_location: (```"y_location": n```) where n is an integer:
         * n > 0: places the top, left corner n pixels from the top of the screen.
         * n < 0: places the top, left corner |n| pixels from the bottom of the screen.
         * n = 0: will be treated as a 10-pixel offset from the top
 
+* The following additional parameters can be set in the settings.json file:
+    * ```hide_missing```
+        * When ```true```, workspaces whose folders are missing will not be included in the select list
+    * ```clean_up_orphans```
+        * When ```true```, workspaces whose folders are missing will have their VS Code workspace folders removed
+        * This is obviously an aggressive step, so leave this ```false``` unless you're absolutely sure you don't want them around
+    * ```show_repos```
+        * When ```true```, names in the select list will include their repository URLs
+    * ```show_glyphs```
+        * When ```true```, repository URLs (if displayed) will be prepended with the nerd-font glyphs for their sites.
+        * Currently only supports the following:
+            * Bitbucket
+            * GitHub
+        * Note: This feature requires that the ```font``` setting (below) be an installed nerd font with the glyphs available
+            * I use the "CaskaydiaCove Nerd Font" for example
+    * ```font```
+        * Name of the (installed) font to be used in the UI
+    * ```font_size```
+        * Display size of the font in the UI as ```"font_size": <int>```
+        * I recommend not setting this lower than 10 or higher than 20
+
 ### Known Conflicts/Compatibility Notes ###
 
-* Paths only support Windows
+* Default paths only support Windows
 
 ### Documentation ###
 

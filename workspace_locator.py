@@ -18,7 +18,8 @@ class WorkspaceLocator:
         "hide_missing": True,
         "clean_up_orphans": False,
         "show_repos": True,
-        "font": "CaskaydiaCove",
+        "font": "CaskaydiaCove Nerd Font",
+        "font_size": 10,
         "show_glyphs": False,
         "x_location": 10,
         "y_location": -160

@@ -5,7 +5,8 @@
     "hide_missing": true,
     "clean_up_orphans": false,
     "show_repos": true,
-    "font": "CaskaydiaCove",
+    "font": "CaskaydiaCove Nerd Font",
+    "font_size": 10,
     "show_glyphs": true,
     "x_location": 10,
     "y_location": -160

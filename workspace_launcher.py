@@ -19,7 +19,7 @@ class WorkspaceLauncher:
         self.workspace_locator = WorkspaceLocator(self.settings)
 
     def create_ui(self) -> None:
-        text = (self.settings["font"], 10)
+        text = (self.settings["font"], self.settings["font_size"])
         filter = sg.InputText(enable_events=True, key="-FILTER-", font=text)
         workspaces = self.workspace_locator.workspaces
         workspace_selector = sg.Combo(
