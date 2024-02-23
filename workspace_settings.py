@@ -4,7 +4,7 @@ The WorkspaceSettings class is just a model for the settings dictionary passed a
 
 from dataclasses import dataclass
 from sm_utils import file_path
-from os import path, getlogin, scandir
+from os import path, getlogin
 from pathlib import Path
 import json
 

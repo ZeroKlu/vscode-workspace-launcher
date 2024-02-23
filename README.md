@@ -2,16 +2,56 @@
 
 Workspace Launcher for Visual Studio Code
 
+---
+
 ### What is this repository for? ###
 
 * A utility to list and launch VSCode workspaces.
 * Currently only supports Windows (tested on Windows 10 and 11)
+
+---
 
 ### Roadmap ###
 
 * Add Linux support
 * Clean up appearance
 * Allow sort by latest used date instead of parent folder > workspace name
+
+---
+
+### What's in here? ###
+
+#### Program Files ####
+
+* **workspace.py**: implements the ***Workspace*** class, which defines a VS Code workspace
+    * Attributes:
+        * **vsc_folder** (*str*): path to the folder that contains the VS Code workspace.json file
+        * **workspace** (*str*): path to the workspace folder
+        * **name** (*str*): folder name for the workspace
+        * **parent** (*str*): parent folder name (that contains the workspace folder)
+        * **repo_uri** (*str*): URI to the GIT repository for the workspace (if one exists)
+        * **exists** (*bool*): True if the workspace folder is defined and exists
+        * **show_repo** (*bool*): When True, show the repository in the display name
+        * **show_glyph** (*bool*): When True, prepend the glyph to the repository if applicable
+    * Properties:
+        * **display_name** (*str*): Display name for the workspace in the select list
+    * Methods:
+        * **from_vscode_folder**: Class Method to generate a Workspace Instance given the path to a VS Code folder (containing a workspace.json file)
+            * Arguments:
+                * vsc_folder (*str*): The path to the VS Code folder
+                * show_repo (*bool* default=True): When true, include the repository in the display name
+                * show_glyph (*bool* default=False): When true, prepend the glyph to the repository in the display name
+        *  **from_workspace_folder**: Class Method to generate a Workspace Instance given the path to a workspace (containing code files)
+            * Arguments:
+                * workspace_folder (*str*): The path to the workspace folder
+                * vsc_folder (*str*): The path to the VS Code folder
+                * show_repo (*bool* default=True): When true, include the repository in the display name
+                * show_glyph (*bool* default=False): When true, prepend the glyph to the repository in the display name
+
+* **workspace_settings.py**: Implements the ***WorkspaceSettings*** class, which models a settings object to control behaviors throughout the project.
+    * TODO: Continue Describing project
+
+---
 
 ### Setup/Requirements ###
 
