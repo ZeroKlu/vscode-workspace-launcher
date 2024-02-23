@@ -3,6 +3,7 @@ The WorkspaceLauncher class provides a UI for interacting with the list of Works
   discovered by WorkspaceLocator.
 """
 
+from workspace_settings import WorkspaceSettings
 from workspace_locator import WorkspaceLocator
 import PySimpleGUI as sg
 import subprocess
@@ -15,13 +16,13 @@ class WorkspaceLauncher:
     """UI for interacting with the list of workspaces"""
 
     def __init__(self, settings_file: str=None) -> None:
-        self.settings = WorkspaceLocator.load_settings(settings_file=settings_file)
-        self.workspace_locator = WorkspaceLocator(self.settings)
+        self._settings = WorkspaceSettings.from_file(settings_file) if settings_file else WorkspaceSettings()
+        self._workspace_locator = WorkspaceLocator(self._settings)
 
     def create_ui(self) -> None:
-        text = (self.settings["font"], self.settings["font_size"])
+        text = (self._settings.font, self._settings.font_size)
         filter = sg.InputText(enable_events=True, key="-FILTER-", font=text)
-        workspaces = self.workspace_locator.workspaces
+        workspaces = self._workspace_locator.workspaces
         workspace_selector = sg.Combo(
             [w.display_name for w in workspaces],
             enable_events=True,
@@ -36,7 +37,7 @@ class WorkspaceLauncher:
             margins=(0, 0)
         )
         x_size, y_size = window.get_screen_dimensions()
-        x, y = self.settings["x_location"], self.settings["y_location"]
+        x, y = self._settings.x_location, self._settings.y_location
         x_pos = x if x > 0 else x_size + x
         y_pos = y if y > 0 else y_size + y
         window.Location = (x_pos, y_pos)
@@ -47,11 +48,11 @@ class WorkspaceLauncher:
                 break
             if event == "-FILTER-" and values["-FILTER-"] != filter_text:
                 filter_text =  values["-FILTER-"]
-                workspaces = [w for w in self.workspace_locator.workspaces if filter_text in w.display_name]
+                workspaces = [w for w in self._workspace_locator.workspaces if filter_text in w.display_name]
                 window["-DROPDOWN-"].update(values=[w.display_name for w in workspaces])
             if event == "-DROPDOWN-":
                 workspace = next(x.workspace for x in workspaces if x.display_name == values["-DROPDOWN-"])
-                args = [self.settings["exe_path"], workspace]
+                args = [self._settings.exe_path, workspace]
                 subprocess.call(args)
         window.close()
 
