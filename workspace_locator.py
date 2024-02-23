@@ -4,9 +4,7 @@ This WorkspaceLocator class obtains a list of all VS Code workspaces on the work
 
 from workspace import Workspace
 from workspace_settings import WorkspaceSettings
-import json
-from pathlib import Path
-from os import path, getlogin, scandir
+from os import scandir
 import shutil
 
 class WorkspaceLocator:

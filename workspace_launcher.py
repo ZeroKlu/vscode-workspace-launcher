@@ -3,7 +3,6 @@ The WorkspaceLauncher class provides a UI for interacting with the list of Works
   discovered by WorkspaceLocator.
 """
 
-from workspace import Workspace
 from workspace_settings import WorkspaceSettings
 from workspace_locator import WorkspaceLocator
 import PySimpleGUI as sg
