@@ -41,12 +41,24 @@ Workspace Launcher for Visual Studio Code
                 * vsc_folder (*str*): The path to the VS Code folder
                 * show_repo (*bool* default=True): When true, include the repository in the display name
                 * show_glyph (*bool* default=False): When true, prepend the glyph to the repository in the display name
+            * Code Sample:
+              ```python
+              from workspace import Workspace
+              vsc_folder = "C:\\Users\\USERNAME\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0d14953ffbc0e69d994e7b502e8cc120"
+              workspace = Workspace.from_vscode_folder(vsc_folder)
+              ```
         *  **from_workspace_folder**: Class Method to generate a Workspace Instance given the path to a workspace (containing code files)
             * Arguments:
                 * workspace_folder (*str*): The path to the workspace folder
                 * vsc_folder (*str*): The path to the VS Code folder
                 * show_repo (*bool* default=True): When true, include the repository in the display name
                 * show_glyph (*bool* default=False): When true, prepend the glyph to the repository in the display name
+            * Code Sample:
+              ```python
+              from workspace import Workspace
+              ws_folder = "C:\\My Python Project"
+              workspace = Workspace.from_vscode_folder(ws_folder)
+              ```
 
 * **workspace_settings.py**: Implements the ***WorkspaceSettings*** class, which models a settings object to control behaviors throughout the project.
     * TODO: Continue Describing project
