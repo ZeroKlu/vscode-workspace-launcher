@@ -60,8 +60,39 @@ Workspace Launcher for Visual Studio Code
               workspace = Workspace.from_vscode_folder(ws_folder)
               ```
 
-* **workspace_settings.py**: Implements the ***WorkspaceSettings*** class, which models a settings object to control behaviors throughout the project.
-    * TODO: Continue Describing project
+* **workspace_settings.py**: Implements the ***WorkspaceSettings*** class, which models a settings object to control behaviors throughout the project. This class is also represented one-for-one in the *settings.json* configuration file.
+    * Attributes:
+        * **exe_path** (*str* default="default"): Path to the VS Code executable
+            * Default points to:<br>
+            ```C:\\Users\\{USERNAME}\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe```
+        * **workspace_path** (*str* default="default"): Path to the workspace folder
+            * Default points to:<br>
+            ```C:\\Users\\{USERNAME}\\AppData\\Roaming\\Code\\User\\workspaceStorage```
+        * **username** (*str* default="default"): Username to use to get workspaces
+            * Default will be the currently logged-in user
+        * **hide_missing** (*bool* default=True): When true, missing workspace folders are omitted from the select list
+        * **clean_up_orphans** (*bool* default=False): When true, missing workspace folders have their related VS Code folders removed
+        * **show_repos** (*bool* default=True): When true, the repository URL is shown in the select list
+        * **font** (*str* default="Consolas"): Name of font to use in the UI
+            * Font must already be installed on the system
+            * If using the *show_glyphs* option, the font must be a nerd font that includes the Bitbucket and GitHub glyphs
+        * **font_size** (*int* default=10): Size of the font to use in the UI
+        * **show_glyphs** (*bool* default=False): When true, a glyph is prepended to the repository URL
+            * Currently only supports
+                * Bitbucket
+                * GitHub
+        * **x_location** (*int* default=10): Horizontal location of the UI (top-left corner)
+            * Measures from the left of the screen
+            * Supports a negative number to measure from the right of the screen
+        * **y_location** (*int* default=-160): Vertical location of the UI (top-left corner)
+            * Measures from the top of the screen
+            * Supports a negative number to measure from the bottom of the screen
+    * Methods:
+    TODO: Continue descriptions
+        * **from_file**
+        * **from_dict**
+        * **_get_user**
+        * **_get_user_paths**
 
 ---
 
