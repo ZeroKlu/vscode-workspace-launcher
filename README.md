@@ -111,11 +111,18 @@ Workspace Launcher for Visual Studio Code
 
 ### Usage ###
 
+* To run the application without creating an executable:
+    * If *settings.json* is in the same directory as the Python files, run the following command from the terminal:<br>
+      ```python.exe workspace_program.py```
+    * To point to your JSON file with a different name or at a different location, add its relative path as an argument:<br>
+      ```python.exe workspace_program.py settings\my_settings.json```
+
 * To generate a stand-alone executable, run the following command:
     * ```pyinstaller --onefile vscode_workspace_launcher.py --windowed --add-data "rocket.ico:." --icon=rocket.ico --version-file=version.txt```<br><br>
 * To update the properties (version number, etc.) of the executable, do the following before generating the .exe:
     * Edit "version.yaml" with the values you want for the properties, then run the following command:
     * ```create-version-file version.yaml --outfile version.txt```<br><br>
+* Make sure a copy of settings.json is in the same directory as the compiled executable
 * To run with the default VSCode paths, leave path items in settings.json set to ```default```<br><br>
 * To run with VSCode paths other than the defaults, edit the settings.json file:
     * exe_path:
