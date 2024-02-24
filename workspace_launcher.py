@@ -12,8 +12,6 @@ import sys
 from os import path
 import webbrowser
 
-# TODO: Add support for launching Repo URL if available
-
 class WorkspaceLauncher:
     """UI for interacting with the list of workspaces"""
 
@@ -21,6 +19,8 @@ class WorkspaceLauncher:
         """Initialize"""
         self._settings = WorkspaceSettings.from_file(settings_file) if settings_file else WorkspaceSettings()
         self._workspace_locator = WorkspaceLocator(self._settings)
+
+        # TODO: Move UI controls to self to allow better separation of event handlers
 
     def create_ui(self) -> None:
         """Generate and launch the GUI"""
