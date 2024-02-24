@@ -72,9 +72,9 @@ class WorkspaceLauncher:
         """Generate and launch the GUI"""
         # Get the list of workspaces to display in the drop-down list
         workspaces = self._workspace_locator.workspaces
-        selected_workspace = None
         
-        # Set the initial filter text blank
+        # Set the initial values for tracking variables
+        selected_workspace = None
         filter_text = ""
 
         # Run the UI until the user closes the window
@@ -102,12 +102,12 @@ class WorkspaceLauncher:
             if event == "-VSC-":
                 # When the user checks the workspace checkbox (with a workspace selected),
                 #   launch the workspace in VS Code
-                self.launch_workspace(selected_workspace)
+                self.on_vsc_toggle_change(selected_workspace)
 
             if event == "-URL-":
                 # When the user checks the URL checkbox (with a workspace selected),
                 #   launch the repository (if it exists) in the browser
-                self.launch_repository(selected_workspace)
+                self.on_url_toggle_change(selected_workspace)
 
         self.window.close()
     #endregion
