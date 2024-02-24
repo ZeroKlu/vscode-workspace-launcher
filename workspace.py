@@ -25,11 +25,11 @@ class Workspace:
     @property
     def display_name(self) -> str:
         """Display name for the workspace when presented to the user"""
-        name = f"{self.parent} > {self.name}"
-        missing = "" if self.exists else " (missing)"
-        bb_glyph = " " if self.show_glyph else ""
-        gh_glyph = " " if self.show_glyph else ""
-        repo = ""
+        name: str = f"{self.parent} > {self.name}"
+        missing: bool = "" if self.exists else " (missing)"
+        bb_glyph: str = " " if self.show_glyph else ""
+        gh_glyph: str = " " if self.show_glyph else ""
+        repo: str = ""
         if self.repo_uri and self.show_repo:
             if "github.com" in self.repo_uri.lower():
                 repo = f" | {bb_glyph}{self.repo_uri}"
@@ -66,7 +66,7 @@ class Workspace:
         ws.show_glyph = show_glyph
         ws.vsc_folder = vsc_folder
         ws.workspace = workspace_folder
-        ws_path = Path(ws.workspace)
+        ws_path= Path(ws.workspace)
         # Add the name and parent name (for later sorting)
         ws.name = ws_path.name
         ws.parent = ws_path.parent.name
@@ -78,7 +78,7 @@ class Workspace:
             return ws if ws.vsc_folder else None
         # Workspace folder exists
         ws.exists = True
-        git_folder = path.join(ws.workspace, ".git")
+        git_folder= path.join(ws.workspace, ".git")
         if not path.isdir(git_folder):
             # If there is no .git directory, we're done
             return ws

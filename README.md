@@ -88,11 +88,56 @@ Workspace Launcher for Visual Studio Code
             * Measures from the top of the screen
             * Supports a negative number to measure from the bottom of the screen
     * Methods:
-    TODO: Continue descriptions
-        * **from_file**
-        * **from_dict**
-        * **_get_user**
-        * **_get_user_paths**
+        * **from_file**: Class method to generate a *WorkspaceSettings* instance from a JSON file
+            * Arguments:
+                * filename (*str*): The filename to load
+                * folder (*str*): Optional folder name the file is in
+            * Code Sample:
+            ```python
+            from workspace_settings import WorkspaceSettings
+            settings = WorkspaceSettings.from_file("settings.json")
+            ```
+        * **from_dict**: Class method to generate a *WorkspaceSettings* instance from a dictionary
+            * Arguments:
+                * settings (*dict[str, any]*): Dictionary containing settings values.
+                    * Note: Keys must exactly match the class attribute names
+            * Code Sample:
+            ```python
+            import json
+            from workspace_settings import WorkspaceSettings
+            my_dict = json.load("settings.json")
+            settings = WorkspaceSettings.from_dict(my_dict)
+            ```
+        * **_get_user**: Internal class method to get the username attribute for the *WorkspaceSettings* instance.
+            * Used by the *from_file* and *from_dict* methods
+            * When the value is "default" returns the logged-in user
+            * Arguments:
+                * **username** (*str*): The currently set username value
+        * **_get_user_paths**: Internal class method to get the paths to the VS Code executable and VS Code workspace directory
+            * Used by the *from_file* and *from_dict* methods
+            * Arguments:
+                * **username** (*str*): The currently set username value
+                * **exe_path** (*str*): The currently set exe_path value
+                    * Converts "default" to the path to the exe
+                * **ws_path** (*str*): The currently set ws_path value
+                    * Converts "default" to the path to the workspaces folder
+
+* **workspace_locator.py**: Implements the ***WorkspaceLocator*** class, which generates the list of all workspaces in the user's workspace directory for display in the UI select list.
+    * Attributes:
+        * **_settings** (*WorkspaceSettings*): The settings for the current execution
+        * **_workspaces** (*list[Workspace]*): The list of workspaces found for the user
+            * This should be accessed from within the class only, as it does not obey settings filters like *hide_missing* (see property below)
+    * Properties:
+        * **workspaces** (*list[Workspace]*): The list of workspaces to display in the UI
+            * Filters out missing workspaces if the *hide_missing* attribute is true in the *_settings* object
+    * Methods:
+        * **load_workspaces**: Traverses the VS Code workspace directories and generates the list of workspaces, sorted by *display_name*
+            * Arguments: (none)
+        * **clean_up_orphans**: Traverses the list of workspaces and deletes the VS Code reference folders for any that are missing (Workspace.exists == False).
+            * Does not execute unless _settings.clean_up_orphans == True
+            * Arguments: (none)
+
+* **workspace_launcher.py**
 
 ---
 
@@ -118,11 +163,11 @@ Workspace Launcher for Visual Studio Code
       ```python.exe workspace_program.py settings\my_settings.json```
 
 * To generate a stand-alone executable, run the following command:
-    * ```pyinstaller --onefile vscode_workspace_launcher.py --windowed --add-data "rocket.ico:." --icon=rocket.ico --version-file=version.txt```<br><br>
+    * ```pyinstaller --onefile workspace_program.py --windowed --add-data "rocket.ico:." --icon=rocket.ico --version-file=version.txt```<br><br>
 * To update the properties (version number, etc.) of the executable, do the following before generating the .exe:
     * Edit "version.yaml" with the values you want for the properties, then run the following command:
     * ```create-version-file version.yaml --outfile version.txt```<br><br>
-* Make sure a copy of settings.json is in the same directory as the compiled executable
+* Make sure a copy of settings.json is in the same directory as the compiled executable<br><br>
 * To run with the default VSCode paths, leave path items in settings.json set to ```default```<br><br>
 * To run with VSCode paths other than the defaults, edit the settings.json file:
     * exe_path:

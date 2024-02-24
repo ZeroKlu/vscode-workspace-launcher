@@ -15,13 +15,13 @@ class WorkspaceLocator:
         # Get settings
         self._settings = settings
         if not self._settings:
-            self._settings = WorkspaceSettings.from_dict(settings) if settings else WorkspaceSettings.from_file(settings_file)
+            self._settings = WorkspaceSettings.from_dict(settings_json) if settings_json else WorkspaceSettings.from_file(settings_file)
         self._workspaces = self.load_workspaces()
         if self._settings.clean_up_orphans:
             self.clean_up_orphans()
     
     @property
-    def workspaces(self):
+    def workspaces(self) -> list[Workspace]:
         return self._workspaces if not self._settings.hide_missing else [w for w in self._workspaces if w.exists]
 
     def load_workspaces(self) -> list[Workspace]:
