@@ -6,8 +6,8 @@ Workspace Launcher for Visual Studio Code
 
 ### What is this repository for? ###
 
-* A utility to list and launch VSCode workspaces.
-* Currently only supports Windows (tested on Windows 10 and 11)
+* A utility to list and launch Visual Studio Code workspaces.
+* Currently only supports VS Code on Windows (tested on Windows 10 and 11)
 
 ---
 
@@ -16,6 +16,42 @@ Workspace Launcher for Visual Studio Code
 * Add Linux support
 * Clean up appearance
 * Allow sort by latest used date instead of parent folder > workspace name
+
+---
+
+### Why is this a thing? ###
+
+There are people who are chronically well-organized. They know what they're
+creating before they start. They create a well-designed directory structure
+and stick with it...
+
+And then there's me. 😳
+
+I create projects any old place. I mean, I'm gonna throw half of them away
+anyhow, since they're mostly just experiments. Then, when I decide to keep
+one, I'll just move it to a more organized folder (sort of). I mean, I'll do
+that, but then, during a weekend bout of insomnia, I'll decide to completely
+reorganize my previously organized directories, because I'm certain I
+totally got them wrong the first (or second... or third...) time. And that's
+just a taste of what living in my head feels like.
+
+One unfortunate side effect of this is that when Visual Studio Code offers
+me a selection of recently opened workspaces, some of them aren't really
+where the software thinks they are.
+
+Moreover, I often want to open one that I haven't visited recently, and
+the recent workspaces selection doesn't help me there at all.
+
+In the long run, there are a lot of orphans in the VS Code files that store
+workspace locations, even after I've re-visited the moved ones so that the
+program is aware of their new locations.
+
+I wanted a quick and easy utility that I could use to launch VS code to any
+past workspace that still exists (where it claims to be), ignoring the
+missing and orphaned records. Since that isn't an available option in the
+software itself, I figured I'd just make one myself.
+
+So, here we are. 😁
 
 ---
 
