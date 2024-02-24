@@ -4,15 +4,19 @@ Because Visual Studio Code does not track moved, renamed or deleted directories,
   if it still exists
 """
 
+#region Imports
 from dataclasses import dataclass
 import json
 import urllib.parse as up
 from os import path
 from pathlib import Path
+#endregion
 
 @dataclass
 class Workspace:
     """Defines a workspace"""
+
+    #region Attributes
     vsc_folder: str=None    # Folder where VS Code stores the workspace.json file describing the workspace
     workspace:  str=None    # Full path to the workspace folder
     name:       str=None    # Folder name containing the workspace files
@@ -21,7 +25,9 @@ class Workspace:
     exists:     bool=False  # True if the workspace folder is defined and exists
     show_repo:  bool=True   # When True, show the repository in the display name
     show_glyph: bool=True   # When True, show the glyph in the display name
+    #endregion
 
+    #region Properties
     @property
     def display_name(self) -> str:
         """Display name for the workspace when presented to the user"""
@@ -38,7 +44,9 @@ class Workspace:
             else:
                 repo = f" | {self.repo_uri}"
         return f"{name}{repo}{missing}"
+    #endregion
 
+    #region Static Factory Methods
     @classmethod
     def from_vscode_folder(cls, vsc_folder: str, show_repo: bool=True, show_glyph: bool=False) -> "Workspace":
         """Factory: Initialize from vscode folder path only"""
@@ -94,3 +102,4 @@ class Workspace:
         # Add the Git URL to the Workspace object
         ws.repo_uri = git_data.split("=")[1].strip()
         return ws
+    #endregion

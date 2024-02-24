@@ -2,15 +2,19 @@
 The WorkspaceSettings class is just a model for the settings dictionary passed around in an earlier iteration
 """
 
+#region Imports
 from dataclasses import dataclass
 from sm_utils import file_path
 from os import path, getlogin
 from pathlib import Path
 import json
+#endregion
 
 @dataclass
 class WorkspaceSettings:
     """Settings model"""
+
+    #region Attributes
     exe_path: str="default"         # Path to the VS Code exe
     workspace_path: str="default"   # Path to the workspace
     username: str="default"         # Username
@@ -22,7 +26,9 @@ class WorkspaceSettings:
     show_glyphs: bool=False         # When true, a glyph is prepended to the repository URL
     x_location: int=10              # Horizontal location of the UI in pixels from the left of the screen
     y_location: int=-160            # Vertical location of the UI in pixels from the top of the screen
+    #endregion
 
+    #region Static Factory Methods
     @classmethod
     def from_file(cls, filename: str, folder: str=None) -> "WorkspaceSettings":
         """Factory for creating WorkspaceSettings from a JSON file"""
@@ -42,7 +48,9 @@ class WorkspaceSettings:
         settings.exe_path, settings.workspace_path = WorkspaceSettings._get_user_paths(
             settings.username, settings.exe_path, settings.workspace_path)
         return settings
+    #endregion
 
+    #region Static Helper Functions
     @classmethod
     def _get_user(cls, username: str) -> str:
         """Get the username for the settings"""
@@ -57,3 +65,4 @@ class WorkspaceSettings:
         if ws_path.lower() == "default":
             ws_path = path.join(user_path, "AppData\\Roaming\\Code\\User\\workspaceStorage")
         return (exe_path, ws_path)
+    #endregion
