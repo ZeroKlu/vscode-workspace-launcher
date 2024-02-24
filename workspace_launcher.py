@@ -18,10 +18,12 @@ class WorkspaceLauncher:
     """UI for interacting with the list of workspaces"""
 
     def __init__(self, settings_file: str=None) -> None:
+        """Initialize"""
         self._settings = WorkspaceSettings.from_file(settings_file) if settings_file else WorkspaceSettings()
         self._workspace_locator = WorkspaceLocator(self._settings)
 
     def create_ui(self) -> None:
+        """Generate and launch the GUI"""
         text = (self._settings.font, self._settings.font_size)
         # Create the textbox for the user to type a filter for the workspaces
         filter = sg.InputText(enable_events=True, key="-FILTER-", font=text)
@@ -31,6 +33,7 @@ class WorkspaceLauncher:
         url_toggle = sg.Checkbox("Launch repo URL", default=False, enable_events=True, key="-URL-")
         # Get the list of workspaces to display in the drop-down list
         workspaces = self._workspace_locator.workspaces
+        selected_workspace = None
         # Create and populate the workspace select list
         workspace_selector = sg.Combo(
             [w.display_name for w in workspaces],
@@ -57,7 +60,9 @@ class WorkspaceLauncher:
         filter_text = ""
         # Run the UI until the user closes the window
         while True:
+            # Listen for events
             event, values = window.read()
+
             if event == sg.WIN_CLOSED:
                 # Halt processing if the user closes the UI
                 break
@@ -73,39 +78,40 @@ class WorkspaceLauncher:
                 #   by the checkboxes
 
                 # Get the workspace Identified by the display name
-                ws = next(w for w in workspaces if w.display_name == values["-DROPDOWN-"])
+                selected_workspace = next(w for w in workspaces if w.display_name == values["-DROPDOWN-"])
+
                 # Launch the workspace in VS Code
                 if vsc_toggle.get():
-                    self.launch_workspace(workspaces, values["-DROPDOWN-"])
+                    self.launch_workspace(selected_workspace)
                 # Launch the repository (if one exists) in the browser
                 if url_toggle.get():
-                    self.launch_repository(workspaces, values["-DROPDOWN-"])
+                    self.launch_repository(selected_workspace)
 
             if event == "-VSC-" and vsc_toggle.get() and values["-DROPDOWN-"]:
                 # When the user checks the workspace checkbox (with a workspace selected),
                 #   launch the workspace in VS Code
-                self.launch_workspace(workspaces, values["-DROPDOWN-"])
+                self.launch_workspace(selected_workspace)
 
             if event == "-URL-" and url_toggle.get() and values["-DROPDOWN-"]:
                 # When the user checks the URL checkbox (with a workspace selected),
                 #   launch the repository (if it exists) in the browser
-                self.launch_repository(workspaces, values["-DROPDOWN-"])
+                self.launch_repository(selected_workspace)
 
         window.close()
 
-    def launch_workspace(self, workspaces: list[Workspace], selected: str):
-        # Get the workspace Identified by the display name
-        ws = next(w for w in workspaces if w.display_name == selected)
-        args = [self._settings.exe_path, ws.workspace]
+    def launch_workspace(self, selected_workspace: Workspace):
+        """Open the selected workspace an instance of Visual Studio code"""
+        # Launch a subprocess to open the workspace in VS Code
+        args = [self._settings.exe_path, selected_workspace.workspace]
         subprocess.call(args)
 
-    def launch_repository(self, workspaces: list[Workspace], selected: str):
+    def launch_repository(self, selected_workspace: Workspace):
+        """Open the repository (if one exists) for the selected workspace in the default browser"""
         # Get the workspace Identified by the display name
-        ws = next(w for w in workspaces if w.display_name == selected)
-        if ws.repo_uri:
-            webbrowser.open(ws.repo_uri)
+        if selected_workspace.repo_uri:
+            # Open the browser to the repository
+            webbrowser.open(selected_workspace.repo_uri)
         
-
     def resource_path(self, file_name: str) -> str:
         """Fix for issue with PyInstaller not respecting the icon"""
         base_path = getattr(sys, "_MEIPASS", path.dirname(path.abspath(__file__)))
