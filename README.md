@@ -61,7 +61,7 @@ So, here we are. 😁
 
 * **workspace.py**: implements the ***Workspace*** class, which defines a VS Code workspace
     * Attributes:
-        * **vsc_folder** (*str*): path to the folder that contains the VS Code workspace.json file
+        * **vsc_folder** (*str*): path to the folder that contains the VS Code workspace.json pointer file
         * **workspace** (*str*): path to the workspace folder
         * **name** (*str*): folder name for the workspace
         * **parent** (*str*): parent folder name (that contains the workspace folder)

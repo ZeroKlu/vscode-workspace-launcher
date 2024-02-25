@@ -1,5 +1,6 @@
 """
-This module combines all of the modular components as a single file for use with PyInstaller
+This module combines all of the modular components for the workspace launcher
+  as a single file for use with PyInstaller
 """
 
 #region Imports
@@ -376,4 +377,20 @@ def main() -> None:
 if __name__ == "__main__":
     main()
 #endregion
+#endregion
+
+#region Default settings.json File
+# {
+#     "exe_path": "default",
+#     "workspace_path": "default",
+#     "username": "default",
+#     "hide_missing": true,
+#     "clean_up_orphans": false,
+#     "show_repos": true,
+#     "font": "CaskaydiaCove Nerd Font",
+#     "font_size": 10,
+#     "show_glyphs": true,
+#     "x_location": 10,
+#     "y_location": -160
+# }
 #endregion
