@@ -205,7 +205,14 @@ So, here we are. 😁
         * **workspace_selector** (*PySimpleGUI.Combo*): Displays the (filtered) list of workspaces to select.
         * **window** (*PySimpleGUI.Window*): Main UI window containing all of the PySimpleGUI controls.
     * Methods:
-        * **create_ui**
+        * **create_ui**: Generates the UI window and launches it for user interaction.
+            * Arguments: (none)
+            * Code Sample:
+            ```python
+            from workspace_launcher import WorkspaceLauncher
+            launcher = WorkspaceLauncher("settings.json")
+            launcher.create_ui()
+            ```
         * **_get_ui_position**: Compares the screen size to the X and Y location settings and returns the computed (x, y) position for the upper left corner of the UI as a tuple
             * Arguments
                 * **window** (*PySimpleGUI.Window*): The Window instance for the UI (used to obtain screen dimensions)
@@ -219,7 +226,7 @@ So, here we are. 😁
             * Arguments:
                 * **file_name** (*str*): The file name to provide a resource path for
     * Event Handlers:
-        * **on_filter_change**
+        * **on_filter_change**: TODO:
         * **on_workspace_select**
         * **on_vsc_toggle_change**
         * **on_url_toggle_change**
@@ -371,11 +378,12 @@ So, here we are. 😁
         * When ```true```, names in the select list will include their repository URLs
     * ```show_glyphs```
         * When ```true```, repository URLs (if displayed) will be prepended with the nerd-font glyphs for their sites.
-        * Currently only supports the following:
+        * Currently only supports the following glyphs:
             * Bitbucket
             * GitHub
         * Note: This feature requires that the ```font``` setting (below) be an installed nerd font with the glyphs available
             * I use the "CaskaydiaCove Nerd Font" for example
+                * A copy is included as fonts\CaskaydiaCove.zip
     * ```font```
         * Name of the (installed) font to be used in the UI
     * ```font_size```
@@ -388,8 +396,9 @@ So, here we are. 😁
 
 ### Documentation ###
 
-* See "Usage" (above)
+* See "Usage" (above)<br>or
+* Review the PDF version of this file (README.pdf)
 
 ### Version History ###
 
-* v1.0 - 1/15/2024 - Initial release
+* v1.0 - 2/25/2024 - Initial release (CS50P Final Project)
