@@ -64,7 +64,7 @@ class WorkspaceLauncher:
             layout=self.window_layout,
             margins=(0, 0)
         )
-        self.window.Location = self.get_ui_position(self.window)
+        self.window.Location = self._get_ui_position(self.window)
     #endregion
 
     #region GUI Execution
@@ -123,26 +123,26 @@ class WorkspaceLauncher:
         """Perform the selected actions when the user selects a workspace"""
         # Launch the workspace in VS Code
         if self.vsc_toggle.get():
-            self.launch_workspace(selected_workspace)
+            self._launch_workspace(selected_workspace)
         # Launch the repository (if one exists) in the browser
         if self.url_toggle.get():
-            self.launch_repository(selected_workspace)
+            self._launch_repository(selected_workspace)
     
     def on_vsc_toggle_change(self, selected_workspace: Workspace) -> None:
         """Launch the workspace in VS code if the user checks the box while a workspace is selected"""
         if not self.vsc_toggle.get() or not selected_workspace:
             return
-        self.launch_workspace(selected_workspace)
+        self._launch_workspace(selected_workspace)
     
     def on_url_toggle_change(self, selected_workspace: Workspace) -> None:
         """Launch the repository in the default browser if the user checks the box while a workspace is selected"""
         if not self.url_toggle.get() or not selected_workspace:
             return
-        self.launch_repository(selected_workspace)
+        self._launch_repository(selected_workspace)
     #endregion
 
     #region Helper functions
-    def get_ui_position(self, window: sg.Window) -> tuple[int, int]:
+    def _get_ui_position(self, window: sg.Window) -> tuple[int, int]:
         # Set the position for the UI window
         x_size, y_size = window.get_screen_dimensions()
         x, y = self._settings.x_location, self._settings.y_location
@@ -150,13 +150,13 @@ class WorkspaceLauncher:
         y_pos = y if y > 0 else y_size + y
         return (x_pos, y_pos)
     
-    def launch_workspace(self, selected_workspace: Workspace):
+    def _launch_workspace(self, selected_workspace: Workspace):
         """Open the selected workspace an instance of Visual Studio code"""
         # Launch a subprocess to open the workspace in VS Code
         args = [self._settings.exe_path, selected_workspace.workspace]
         subprocess.call(args)
 
-    def launch_repository(self, selected_workspace: Workspace):
+    def _launch_repository(self, selected_workspace: Workspace):
         """Open the repository (if one exists) for the selected workspace in the default browser"""
         # Get the workspace Identified by the display name
         if selected_workspace.repo_uri:

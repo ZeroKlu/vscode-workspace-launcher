@@ -7,6 +7,7 @@ import pytest
 
 @pytest.fixture
 def settings_path():
+    """Path to settings.json file"""
     # Dev note: Set to path on testing machine
     return r"D:\Training\GitHub\git-poc\settings.json"
 
@@ -21,7 +22,7 @@ def test_init_with_settings():
     wl = WorkspaceLocator(settings)
     assert wl._settings == WorkspaceLocator.default_settings
 
-def test_init_with_settings_file(settings_path):
+def test_init_with_settings_file(settings_path: str):
     """Test initializing passing settings JSON file"""
     wl = WorkspaceLocator(settings_file=settings_path)
     assert wl._settings == WorkspaceLocator.default_settings

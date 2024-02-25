@@ -55,6 +55,28 @@ So, here we are. 😁
 
 ---
 
+### Setup/Requirements ###
+
+* Create a virtual environment
+    * ```py -m venv .venv```
+* Activate the virtual environment
+    * ```.venv\Scripts\activate```
+* Install the required Python modules:
+    * You can install the requirements all at once using:
+        * ```py -m pip install -r requirements.txt```
+    * Or you can install the individual requirements
+        * PySimpleGUI
+            * ```py -m pip install pysimplegui```
+        * sm-utils
+            * ```py -m pip install sm_utils```
+* If you want to compile this to an executable, install the following additional Python modules:
+    * PyInstaller
+        * ```py -m pip install pyinstaller```
+    * PyInstaller VersionFile
+        * ```py -m pip install pyinstaller-versionfile```
+
+---
+
 ### What's in here? ###
 
 #### Program Files ####
@@ -173,33 +195,144 @@ So, here we are. 😁
             * Does not execute unless _settings.clean_up_orphans == True
             * Arguments: (none)
 
-* **workspace_launcher.py**
+* **workspace_launcher.py**: Implements the ***WorkspaceLauncher*** class, which uses PySimpleGUI to create and display the UI for the user to select and launch workspaces.
+    * Attributes:
+        * **_settings** (*WorkspaceSettings*): The settings object for the application
+        * **_workspace_locator** (*WorkspaceLocator*): Used to generate the list of workspaces to display in the select list
+        * **workspace_filter** (*PySimpleGUI.InputText*): Text box to allow the user to filter the results displayed in the select list
+        * **vsc_toggle** (*PySimpleGUI.Checkbox*): When checked, selecting a workspace launches Visual Studio Code to the workspace
+        * **url_toggle** (*PySimpleGUI.Checkbox*): When checked, selecting a workspace launches the default web browser to the repository URL (if one exists)
+        * **workspace_selector** (*PySimpleGUI.Combo*): Displays the (filtered) list of workspaces to select.
+        * **window** (*PySimpleGUI.Window*): Main UI window containing all of the PySimpleGUI controls.
+    * Methods:
+        * **create_ui**
+        * **_get_ui_position**: Compares the screen size to the X and Y location settings and returns the computed (x, y) position for the upper left corner of the UI as a tuple
+            * Arguments
+                * **window** (*PySimpleGUI.Window*): The Window instance for the UI (used to obtain screen dimensions)
+        * **_launch_workspace**: Launches an instance of Visual Studio code at the workspace location
+            * Arguments
+                * **selected_workspace** (*Workspace*): The workspace selected by the user in the UI
+        * **_launch_repository**: Launches the repository URL (if one exists) in the default browser
+            * Arguments
+                * **selected_workspace** (*Workspace*): The workspace selected by the user in the UI
+        * **resource_path**: This function exists only to work around an issue with PyInstaller where the icon does not display on the compiled application (not part of the main program).
+            * Arguments:
+                * **file_name** (*str*): The file name to provide a resource path for
+    * Event Handlers:
+        * **on_filter_change**
+        * **on_workspace_select**
+        * **on_vsc_toggle_change**
+        * **on_url_toggle_change**
+
+* **workspace_program.py**: Contains the main() function to execute the overall program
+    * Obtains the path to the *settings.json* file
+    * Creates an instance of *WorkspaceLauncher*
+    * Calls *WorkspaceLauncher.create_ui()*
+
+* **.\one-file\vscode_workspace_launcher.py**:
+    * Places all of the above program components in a single Python file
+    * Used with PyInstaller to simplify generating an executable version
+
+#### Supporting Files ####
+
+* **settings.json**: Contains the user-configurable settings as a JSON object
+    * Defaults:
+    ```json
+    {
+        "exe_path": "default",
+        "workspace_path": "default",
+        "username": "default",
+        "hide_missing": true,
+        "clean_up_orphans": false,
+        "show_repos": true,
+        "font": "CaskaydiaCove Nerd Font",
+        "font_size": 10,
+        "show_glyphs": true,
+        "x_location": 10,
+        "y_location": -160
+    }
+    ```
+
+* **rocket.ico**: Icon file for the PySimpleGUI window<br>
+![Rocket Icon](rocket.ico "Launch!")
+
+* **requirements.txt**: Python requirements file for installed modules
+    * Content:
+    ```
+    PySimpleGUI
+    sm_utils
+    ```
+
+* **.\one-file\version.yaml**: YAML file to generate PyInstaller version file
+
+* **.\one-file\version.txt**: PyInstaller version file converted from YAML using pyinstaller-versionfile
+
+#### Test Files ####
+
+* **test_workspace.py**: PyTest tests for the *Workspace* class
+    * Fixtures:<br>
+      Note: Fixtures must be set to values existing on the current workstation
+        * **default_vsc_path**: Path to a VS Code pointer folder for a workspace on the current workstation
+        * **default_ws_path**: Path to a workspace on the current workstation
+        * **default_ws_name**: Name of the default workspace on the current workstation
+        * **default_parent**: Parent folder of the default workspace on the current workstation
+        * **default_repo_url**: URL of the default workspace repository
+        * **defaults**: Default workspace for testing/comparison
+            * Uses the above fixtures as its values
+    * Test Functions:
+        * **test_init**: Test initializer without any values
+            * Arguments: (none)
+        * **test_init_defaults**: Test initializer with values but no factory functions
+            * Arguments
+                * **defaults** (*Workspace* fixture)
+        * **test_from_vsc_folder**: Test Workspace factory using VSC folder
+            * Arguments
+                * **defaults** (*Workspace* fixture)
+        * **test_from_invalid_vsc_folder**: Test Workspace factory using invalid VSC folder
+            * Arguments: (none)
+        * **test_from_ws_folder**: Test Workspace factory using WS folder
+            * Arguments
+                * **defaults** (*Workspace* fixture)
+        * **test_from_ws_folder_no_vsc**: Test Workspace factory using WS folder (without VSC folder)
+            * Arguments
+                * **defaults** (*Workspace* fixture)
+        * **test_from_invalid_ws_folder**: Test Workspace factory using invalid WS folder
+            * Arguments: (none)
+        * **test_display_name**: Test display name
+            * Arguments
+                * **defaults** (*Workspace* fixture)
+
+* **test_workspace_locator.py**: PyTest tests for the *WorkspaceLocator* class
+    * Fixtures:
+        * **settings_path** (*str*): Path to settings.json file
+    * Test Functions:
+        * **test_init_no_settings**: Test initializing without passing settings
+            * Arguments: (none)
+        * **test_init_with_settings**: Test initializing passing settings
+            * Arguments: (none)
+        * **test_init_with_settings_file**: Test initializing passing settings JSON file
+            * Arguments
+                * **settings_path** (*str* fixture)
+        * **test_workspaces**: Test obtaining workspaces
+            * Arguments
+                * **settings_path** (*str* fixture)
 
 ---
-
-### Setup/Requirements ###
-
-* Install the following Python modules:
-    * PySimpleGUI
-        * ```py -m pip install pysimplegui```
-    * sm-utils
-        * ```py -m pip install sm_utils```
-* If you want to compile this to an executable, install the following additional Python modules:
-    * PyInstaller
-        * ```py -m pip install pyinstaller```
-    * PyInstaller VersionFile
-        * ```py -m pip install pyinstaller-versionfile```
 
 ### Usage ###
 
 * To run the application without creating an executable:
     * If *settings.json* is in the same directory as the Python files, run the following command from the terminal:<br>
-      ```python.exe workspace_program.py```
+      ```python.exe workspace_program.py```<br>
+      or<br>
+      ```python.exe one-file\vscode_workspace_launcher.py```
     * To point to your JSON file with a different name or at a different location, add its relative path as an argument:<br>
-      ```python.exe workspace_program.py settings\my_settings.json```
+      ```python.exe workspace_program.py settings\my_settings.json```<br>
+      or<br>
+      ```python.exe one-file\vscode_workspace_launcher.py  settings\my_settings.json```
 
-* To generate a stand-alone executable, run the following command:
-    * ```pyinstaller --onefile workspace_program.py --windowed --add-data "rocket.ico:." --icon=rocket.ico --version-file=version.txt```<br><br>
+* To generate a stand-alone executable, run the following command in the one-file directory:
+    * ```pyinstaller --onefile vscode_workspace_launcher.py --windowed --add-data "rocket.ico:." --icon=rocket.ico --version-file=version.txt```<br><br>
 * To update the properties (version number, etc.) of the executable, do the following before generating the .exe:
     * Edit "version.yaml" with the values you want for the properties, then run the following command:
     * ```create-version-file version.yaml --outfile version.txt```<br><br>
