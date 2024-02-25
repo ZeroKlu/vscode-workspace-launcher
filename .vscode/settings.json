@@ -5,6 +5,7 @@
         "MEIPASS",
         "onefile",
         "outfile",
+        "pngtree",
         "pyinstaller",
         "pysimplegui",
         "scandir",

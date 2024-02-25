@@ -205,7 +205,7 @@ So, here we are. 😁
         * **workspace_selector** (*PySimpleGUI.Combo*): Displays the (filtered) list of workspaces to select.
         * **window** (*PySimpleGUI.Window*): Main UI window containing all of the PySimpleGUI controls.
     * Methods:
-        * **create_ui**: Generates the UI window and launches it for user interaction.
+        * **create_ui**: Generates the UI window and launches it for user interaction. Raises events when any of the GUI controls are changed.
             * Arguments: (none)
             * Code Sample:
             ```python
@@ -224,12 +224,22 @@ So, here we are. 😁
                 * **selected_workspace** (*Workspace*): The workspace selected by the user in the UI
         * **resource_path**: This function exists only to work around an issue with PyInstaller where the icon does not display on the compiled application (not part of the main program).
             * Arguments:
-                * **file_name** (*str*): The file name to provide a resource path for
+                * **file_name** (*str*): The file to provide a resource path for
     * Event Handlers:
-        * **on_filter_change**: TODO:
-        * **on_workspace_select**
-        * **on_vsc_toggle_change**
-        * **on_url_toggle_change**
+        * **on_filter_change**: Called after the event when the user types in the filter field and resets the list to include only workspaces that include the filter text in the display name.
+            * Arguments:
+                * **filter_text** (*str*): The text value currently in the filter field
+        * **on_workspace_select**: Called after the event when the user selects a workspace from the list. Calls the following functions:
+            * If the *vsc_toggle* box is checked, calls *_launch_workspace()*
+            * If the *url_toggle* box is checked, calls *_launch_repository()*
+            * Arguments:
+                * **selected_workspace** (*Workspace*): The workspace selected by the user
+        * **on_vsc_toggle_change**: Called after the event when the user checks or unchecks the *vsc_toggle* checkbox. If a workspace is selected and the user checked the box, calls *_launch_workspace()*. Otherwise does nothing.
+            * Arguments:
+                * **selected_workspace** (*Workspace*): The workspace selected by the user
+        * **on_url_toggle_change**: Called after the event when the user checks or unchecks the *url_toggle* checkbox. If a workspace is selected, a repository exists for the selected workspace, and the user checked the box, calls *_launch_repository()*. Otherwise does nothing.
+            * Arguments:
+                * **selected_workspace** (*Workspace*): The workspace selected by the user
 
 * **workspace_program.py**: Contains the main() function to execute the overall program
     * Obtains the path to the *settings.json* file
@@ -261,6 +271,7 @@ So, here we are. 😁
     ```
 
 * **rocket.ico**: Icon file for the PySimpleGUI window<br>
+Note: This image comes from [pngtree.com](https://pngtree.com/) and is not usable for commercial purposes<br>
 ![Rocket Icon](rocket.ico "Launch!")
 
 * **requirements.txt**: Python requirements file for installed modules
