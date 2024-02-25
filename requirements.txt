@@ -1,2 +1,4 @@
-PySimpleGUI
-sm_utils
+pyasn1==0.5.1
+PySimpleGUI==5.0.2
+rsa==4.9
+sm_utils==0.2.7
