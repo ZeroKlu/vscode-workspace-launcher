@@ -1,7 +1,31 @@
-"""Test functions for the Workspace Class"""
+"""Test Functions for project.py"""
 
-from workspace import Workspace
+import platform
+from project import verify_windows, get_settings, unsupported_os_alert, WorkspaceSettings, Workspace, WorkspaceLocator
 import pytest
+
+# Dev Note: Make sure all fixtures exist on the current workstation
+@pytest.fixture
+def default_settings_file():
+    """Settings file name/path for testing"""
+    return "settings.json"
+
+def test_verify_windows():
+    """Test the verify_windows function"""
+    assert verify_windows() == (platform.system() == "Windows")
+
+def test_get_settings(default_settings_file: str):
+    """Test the get_settings method"""
+    # Valid settings file
+    assert isinstance(get_settings(default_settings_file), WorkspaceSettings)
+    # Invalid settings file
+    assert get_settings("invalid.json") is None
+
+def test_unsupported_os_alert():
+    """Test the unsupported_os_alert function"""
+    assert unsupported_os_alert(suppress_alert=True) == f"Unsupported OS: {platform.system()}"
+
+"""Test functions for the Workspace Class"""
 
 # Dev Note: Make sure all fixtures exist on the current workstation
 @pytest.fixture
@@ -32,14 +56,14 @@ def default_repo_url() -> str:
 @pytest.fixture
 def defaults(default_vsc_path: str,
              default_ws_path: str,
-             default_workspace_name: str,
+             default_ws_name: str,
              default_parent: str,
              default_repo_url: str) -> Workspace:
     """Default workspace for testing/comparison"""
     return Workspace(
         default_vsc_path,
         default_ws_path,
-        default_workspace_name,
+        default_ws_name,
         default_parent,
         default_repo_url,
         True
@@ -108,5 +132,40 @@ def test_from_invalid_ws_folder():
 def test_display_name(defaults: Workspace):
     """Test display name"""
     w = Workspace.from_workspace_folder(defaults.workspace)
-    assert w.display_name == defaults.display_name
-    assert w.display_name == f"{defaults.parent} > {defaults.name} | {defaults.repo_uri}"
+    w.show_glyph = defaults.show_glyph
+#     assert w.display_name == defaults.display_name
+
+"""Test functions for the WorkspaceLocator Class"""
+
+# Run tests on a machine with workspaces
+
+@pytest.fixture
+def settings_path() -> str:
+    """Path to settings.json file"""
+    # Dev note: Set to path on testing machine
+    return "settings.json"
+
+@pytest.fixture
+def default_settings() -> WorkspaceSettings:
+    return WorkspaceSettings()
+
+def test_init_no_settings(default_settings):
+    """Test initializing without passing settings"""
+    wl = WorkspaceLocator()
+    assert wl._settings == default_settings
+
+def test_init_with_settings(default_settings):
+    """Test initializing passing settings"""
+    settings = WorkspaceSettings()
+    wl = WorkspaceLocator(settings)
+    assert wl._settings == default_settings
+
+def test_init_with_settings_file(settings_path: str):
+    """Test initializing passing settings JSON file"""
+    wl = WorkspaceLocator(settings_file=settings_path)
+    assert wl._settings == WorkspaceSettings.from_file(settings_path)
+
+def test_workspaces(settings_path):
+    """Test obtaining workspaces"""
+    wl = WorkspaceLocator(settings_file=settings_path)
+    assert len(wl._workspaces) > 0

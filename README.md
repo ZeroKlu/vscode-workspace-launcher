@@ -241,7 +241,7 @@ So, here we are. 😁
             * Arguments:
                 * **selected_workspace** (*Workspace*): The workspace selected by the user
 
-* **workspace_program.py**: Contains the main() function to execute the overall program
+* **project.py**: Contains the main() function to execute the overall program
     * Obtains the path to the *settings.json* file
     * Creates an instance of *WorkspaceLauncher*
     * Calls *WorkspaceLauncher.create_ui()*
@@ -341,16 +341,16 @@ Note: This image comes from [pngtree.com](https://pngtree.com/) and is not usabl
 
 * To run the application without creating an executable:
     * If *settings.json* is in the same directory as the Python files, run the following command from the terminal:<br>
-      ```python.exe workspace_program.py```<br>
+      ```python.exe project.py```<br>
       or<br>
-      ```python.exe one-file\vscode_workspace_launcher.py```
+      ```python.exe one-file\project.py```
     * To point to your JSON file with a different name or at a different location, add its relative path as an argument:<br>
-      ```python.exe workspace_program.py settings\my_settings.json```<br>
+      ```python.exe project.py settings\my_settings.json```<br>
       or<br>
-      ```python.exe one-file\vscode_workspace_launcher.py  settings\my_settings.json```
+      ```python.exe one-file\project.py  settings\my_settings.json```
 
 * To generate a stand-alone executable, run the following command in the one-file directory:
-    * ```pyinstaller --onefile vscode_workspace_launcher.py --windowed --add-data "rocket.ico:." --icon=rocket.ico --version-file=version.txt```<br><br>
+    * ```pyinstaller --onefile project.py --windowed --add-data "rocket.ico:." --icon=rocket.ico --version-file=version.txt```<br><br>
 * To update the properties (version number, etc.) of the executable, do the following before generating the .exe:
     * Edit "version.yaml" with the values you want for the properties, then run the following command:
     * ```create-version-file version.yaml --outfile version.txt```<br><br>
