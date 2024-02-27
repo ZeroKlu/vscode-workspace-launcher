@@ -7,15 +7,15 @@ Workspace Launcher for Visual Studio Code
 ### What is this repository for? ###
 
 * A utility to list and launch Visual Studio Code workspaces.
-* Currently only supports VS Code on Windows (tested on Windows 10 and 11)
 
 ---
 
-### Roadmap ###
+### Enhancement Roadmap ###
 
-* Add Linux support
+* Add Linux & MacOS support
 * Clean up appearance
 * Allow sort by latest used date instead of parent folder > workspace name
+* Look for missing workspaces at locations other than the pointers
 
 ---
 
@@ -42,9 +42,9 @@ where the software thinks they are.
 Moreover, I often want to open one that I haven't visited recently, and
 the recent workspaces selection doesn't help me there at all.
 
-In the long run, there are a lot of orphans in the VS Code files that store
-workspace locations, even after I've re-visited the moved ones so that the
-program is aware of their new locations.
+In the long run, there are a lot of orphans and duplicates in the VS Code
+pointer files that store workspace locations, even after I've re-visited the
+moved ones so that the program is aware of their new locations.
 
 I wanted a quick and easy utility that I could use to launch VS code to any
 past workspace that still exists (where it claims to be), ignoring the
@@ -77,9 +77,42 @@ So, here we are. 😁
 
 ---
 
+### How Does Visual Studio Code Handle Workspaces? ###
+
+Each time a workspace is created or interacted with in VS Code, the software
+creates or updates a pointer directory containing the workspace information.
+
+In Windows, the default location where these pointers are created is:<br>
+```C:\Users\{USERNAME}\AppData\Roaming\Code\User\workspaceStorage```
+
+The workspace pointer folders are created with non-meaningful GUID names,
+so it is necessary to review the JSON file inside (*workspace.json*) to
+identify the location of the workspace being referenced.
+
+The content of one of those files is a JSON object containing one key: [folder] with a URL-encoded path as its value, resembling the following:
+```json
+{
+    "folder": "file:///c%3A/Path/To/Workspace"
+}
+```
+
+So, programmatically identifying the active workspaces requires a multi-step approach:
+
+1. Read the workspace pointer files stored by VS Code
+2. Decode the URL and parse off leading "file:///" to obtain a local path
+3. Verify that the local path exists and is a directory
+
+---
+
 ### What's in here? ###
 
 #### Program Files ####
+
+Note: For convenience, all of the files listed below have been merged into
+a single Python file (***project.py***) for final delivery. However, to
+facilitate an easy understanding of the components, I have left the
+documentation below broken down by file. You can still find the separate
+component files in the */multi-file* subdirectory.
 
 * **workspace.py**: implements the ***Workspace*** class, which defines a VS Code workspace
     * Attributes:
@@ -146,6 +179,16 @@ So, here we are. 😁
             * Measures from the top of the screen
             * Supports a negative number to measure from the bottom of the screen
     * Methods:
+        * **__post_init__**: Obtains username and paths if any of the values are still "default" after initialization.
+            * This should only perform work in the instance that a *WorkspaceSettings* object was created without using the provided factory methods.
+            * This is the scenario (not recommended) for which this method exists.
+            ```python
+            from workspace_settings import WorkspaceSettings
+            # Creating a settings object without arguments
+            # In this instance, only the default values are assigned
+            settings = WorkspaceSettings()
+            ```
+            * See the code samples in *from_file* and *from_dict* below for the preferred approach.
         * **from_file**: Class method to generate a *WorkspaceSettings* instance from a JSON file
             * Arguments:
                 * filename (*str*): The filename to load
@@ -189,6 +232,17 @@ So, here we are. 😁
         * **workspaces** (*list[Workspace]*): The list of workspaces to display in the UI
             * Filters out missing workspaces if the *hide_missing* attribute is true in the *_settings* object
     * Methods:
+        * **__init__**: Initializes the *WorkspaceLocator* object
+            * Arguments:
+                * **settings** (*WorkspaceSettings* default=None):
+                    * Preferred option
+                    * The *WorkspaceSettings* object to be used
+                * **settings_json** (*dict[str, any]* default=None):
+                    * A dictionary containing all of the settings needed for a *WorkspaceSettings* object
+                    * Used in conjunction with *WorkspaceSettings.from_dict()* when *settings* is not provided.
+                * **settings_file** (*str* default=None):
+                    * The path to the settings JSON file.
+                    * Used in conjunction with *WorkspaceSettings.from_file()* when neither *settings* nor *settings_json* is provided.
         * **load_workspaces**: Traverses the VS Code workspace directories and generates the list of workspaces, sorted by *display_name*
             * Arguments: (none)
         * **clean_up_orphans**: Traverses the list of workspaces and deletes the VS Code reference folders for any that are missing (Workspace.exists == False).
@@ -241,13 +295,29 @@ So, here we are. 😁
             * Arguments:
                 * **selected_workspace** (*Workspace*): The workspace selected by the user
 
-* **project.py**: Contains the main() function to execute the overall program
-    * Obtains the path to the *settings.json* file
-    * Creates an instance of *WorkspaceLauncher*
-    * Calls *WorkspaceLauncher.create_ui()*
+* **workspace_program.py**: Contains the main() function to execute the overall program
+    * Functions:
+        * **main**: The main function to execute
+            * Calls function to verify the program is running on Windows
+                * Displays an alert and exits otherwise
+            * Obtains the path to the *settings.json* file
+                * Checks first for command-line argument
+                * If none is provided, defaults to "settings.json"
+            * Creates a full path to the settings file and obtains a *WorkspaceSettings* object from the *get_settings* function
+            * Creates an instance of *WorkspaceLauncher*
+            * Calls *WorkspaceLauncher.create_ui()*
+            * Arguments: (none)
+        * **verify_windows**: Returns true if the current OS is Windows, otherwise false.
+            * Arguments: (none)
+        * **unsupported_os_alert**: Displays a PySimpleGUI pop-up window informing the user that the current OS is unsupported.
+            * Arguments:
+                * **suppress_alert** (*bool*):
+                    * If true, the popup window will not be shown, and only the alert in the terminal will appear.
+        * **get_settings**: Obtains the settings object to use for the *WorkspaceLauncher*
 
 * **.\one-file\vscode_workspace_launcher.py**:
     * Places all of the above program components in a single Python file
+    * Duplicate of *project.py*
     * Used with PyInstaller to simplify generating an executable version
 
 #### Supporting Files ####
@@ -286,6 +356,19 @@ Note: This image comes from [pngtree.com](https://pngtree.com/) and is not usabl
 * **.\one-file\version.txt**: PyInstaller version file converted from YAML using pyinstaller-versionfile
 
 #### Test Files ####
+
+Note: For convenience, all of the files listed below have been merged into
+a single Python file (***test_project.py***) for final delivery. However, to
+facilitate an easy understanding of the components, I have left the
+documentation below broken down by file.
+
+* **test_workspace_program.py**: PyTest tests for the main executable file
+    * Fixtures:
+        * **default_settings_file**: Relative path to the settings file on the current workstation.
+    * Test Functions:
+        * **test_verify_windows**: Tests the function to verify that the OS it's running on is Windows
+        * **test_get_settings**: Test to verify that a proper *WorkspaceSettings* object is returned with a valid JSON file and an invalid file path returns nothing.
+        * **test_unsupported_os_alert**: Test to validate that the program exits with a meaningful message when run on an unsupported OS.
 
 * **test_workspace.py**: PyTest tests for the *Workspace* class
     * Fixtures:<br>

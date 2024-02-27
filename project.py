@@ -183,7 +183,7 @@ class WorkspaceLocator:
     """Locator for VS Code Workspaces on PC"""
 
     #region Constructor
-    def __init__(self, settings: WorkspaceSettings=None, settings_json: dict[str, str]=None, settings_file: str=None) -> None:
+    def __init__(self, settings: WorkspaceSettings=None, settings_json: dict[str, any]=None, settings_file: str=None) -> None:
         """Initialize"""
         # Get settings
         self._settings = settings
